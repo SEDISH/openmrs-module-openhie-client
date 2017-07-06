@@ -201,49 +201,27 @@ public final class MessageUtil {
 	private void updatePID(PID pid, Patient patient, boolean localIdOnly) throws HL7Exception {
 
 		// Update the pid segment with data in the patient
-		
+
 		// PID-3
-		pid.getPatientIdentifierList(0).getAssigningAuthority().getUniversalID().setValue(this.m_cdaConfiguration.getPatientRoot());
-		pid.getPatientIdentifierList(0).getAssigningAuthority().getUniversalIDType().setValue("ISO");
+		pid.getPatientIdentifierList(0).getAssigningAuthority().getUniversalID().setValue(this.m_cdaConfiguration.getShrRoot());
+		pid.getPatientIdentifierList(0).getAssigningAuthority().getNamespaceID().setValue(this.m_cdaConfiguration.getShrRoot());
+		pid.getPatientIdentifierList(0).getAssigningAuthority().getUniversalIDType().setValue("NI");
 		pid.getPatientIdentifierList(0).getIDNumber().setValue(patient.getId().toString());
-		pid.getPatientIdentifierList(0).getIdentifierTypeCode().setValue("PI");
-		
-		// Other identifiers
-		if(!localIdOnly)
-			for(PatientIdentifier patIdentifier : patient.getIdentifiers())
-			{
-				CX patientId = pid.getPatientIdentifierList(pid.getPatientIdentifierList().length);
-				if(II.isRootOid(new II(patIdentifier.getIdentifierType().getName())))
-				{
-					patientId.getAssigningAuthority().getUniversalID().setValue(patIdentifier.getIdentifierType().getName());
-					patientId.getAssigningAuthority().getUniversalIDType().setValue("ISO");
-				}
-				else if(II.isRootOid(new II(patIdentifier.getIdentifierType().getUuid())))
-				{
-					patientId.getAssigningAuthority().getUniversalID().setValue(patIdentifier.getIdentifierType().getUuid());
-					patientId.getAssigningAuthority().getUniversalIDType().setValue("ISO");
-				}
-				else
-					patientId.getAssigningAuthority().getNamespaceID().setValue(patIdentifier.getIdentifierType().getName());
-	
-				patientId.getIDNumber().setValue(patIdentifier.getIdentifier());
-				patientId.getIdentifierTypeCode().setValue("PT");
-			}
 
 		// Names
 		for(PersonName pn : patient.getNames())
 			if(!pn.getFamilyName().equals("(none)") && !pn.getGivenName().equals("(none)"))
 				this.updateXPN(pid.getPatientName(pid.getPatientName().length), pn);
-		
+
 		// Gender
 		pid.getAdministrativeSex().setValue(patient.getGender());
-		
+
 		// Date of birth
-		if(patient.getBirthdateEstimated())
-			pid.getDateTimeOfBirth().getTime().setValue(new SimpleDateFormat("yyyy").format(patient.getBirthdate()));
-		else
-			pid.getDateTimeOfBirth().getTime().setValue(new SimpleDateFormat("yyyyMMdd").format(patient.getBirthdate()));
-		
+        /*if(patient.getBirthdateEstimated())
+            pid.getDateTimeOfBirth().getTime().setValue(new SimpleDateFormat("yyyy").format(patient.getBirthdate()));
+        else
+            pid.getDateTimeOfBirth().getTime().setValue(new SimpleDateFormat("yyyyMMdd").format(patient.getBirthdate()));*/
+
 		// Addresses
 		for(PersonAddress pa : patient.getAddresses())
 		{
@@ -252,6 +230,8 @@ public final class MessageUtil {
 				xad.getStreetAddress().getStreetOrMailingAddress().setValue(pa.getAddress1());
 			if(pa.getAddress2() != null)
 				xad.getOtherDesignation().setValue(pa.getAddress2());
+			if(pa.getAddress3() != null)
+				xad.getOtherDesignation().setValue(xad.getOtherDesignation() + " " + pa.getAddress3());
 			if(pa.getCityVillage() != null)
 				xad.getCity().setValue(pa.getCityVillage());
 			if(pa.getCountry() != null)
@@ -262,33 +242,33 @@ public final class MessageUtil {
 				xad.getZipOrPostalCode().setValue(pa.getPostalCode());
 			if(pa.getStateProvince() != null)
 				xad.getStateOrProvince().setValue(pa.getStateProvince());
-			
+
 			if(pa.getPreferred())
 				xad.getAddressType().setValue("L");
 		}
-		
+
 		// Death?
 		if(patient.getDead())
 		{
 			pid.getPatientDeathIndicator().setValue("Y");
 			pid.getPatientDeathDateAndTime().getTime().setDatePrecision(patient.getDeathDate().getYear(), patient.getDeathDate().getMonth(), patient.getDeathDate().getDay());
 		}
-		
+
 		// Mother?
-		for(Relationship rel : Context.getPersonService().getRelationships(patient))
+		for(Relationship rel : Context.getPersonService().getRelationshipsByPerson(patient))
 		{
 			if(rel.getRelationshipType().getDescription().contains("MTH") &&
 					patient.equals(rel.getPersonB())) //MOTHER?
 			{
-				// TODO: Find a better ID 
+				// TODO: Find a better ID
 				this.updateXPN(pid.getMotherSMaidenName(0), rel.getPersonB().getNames().iterator().next());
-				pid.getMotherSIdentifier(0).getAssigningAuthority().getUniversalID().setValue(this.m_cdaConfiguration.getPatientRoot());
+				pid.getMotherSIdentifier(0).getAssigningAuthority().getUniversalID().setValue(this.m_cdaConfiguration.getShrRoot());
 				pid.getMotherSIdentifier(0).getAssigningAuthority().getUniversalIDType().setValue("ISO");
 				pid.getMotherSIdentifier(0).getIDNumber().setValue(String.format("%s",rel.getPersonB().getId()));
 			}
-				
+
 		}
-		
+
 	}
 
 	/**
@@ -308,7 +288,7 @@ public final class MessageUtil {
 			xpn.getSecondAndFurtherGivenNamesOrInitialsThereof().setValue(pn.getMiddleName());
 		if(pn.getPrefix() != null)
 			xpn.getPrefixEgDR().setValue(pn.getPrefix());
-		
+
 		if(pn.getPreferred())
 			xpn.getNameTypeCode().setValue("L");
 		else
@@ -319,7 +299,7 @@ public final class MessageUtil {
 	/**
 	 * Update MSH
 	 * @param msh
-	 * @throws DataTypeException 
+	 * @throws DataTypeException
 	 */
 	private void updateMSH(MSH msh, String messageCode, String triggerEvent) throws DataTypeException {
         msh.getFieldSeparator().setValue("|");
@@ -333,7 +313,7 @@ public final class MessageUtil {
         msh.getProcessingID().getProcessingID().setValue("P"); // Production
         msh.getReceivingApplication().getNamespaceID().setValue("CR"); // Client Registry
         msh.getReceivingFacility().getNamespaceID().setValue("MOH_CAAT"); // Mohawk College of Applied Arts and Technology
-        
+
         ImplementationId implementation = Context.getAdministrationService().getImplementationId();
         if(implementation != null)
 	        msh.getSendingApplication().getNamespaceID().setValue(implementation.getName()); // What goes here?

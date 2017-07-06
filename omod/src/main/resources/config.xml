@@ -23,6 +23,18 @@
 		<require_module version="1.0.0">
 			org.openmrs.module.shr-atna
 		</require_module>
+		<require_module version="3.0.0">
+			org.openmrs.module.shr-contenthandler
+		</require_module>
+		<require_module version="1.0.0">
+			org.openmrs.module.xds-b-repository
+		</require_module>
+		<require_module version="0.6.0">
+			org.openmrs.module.shr-cdahandler
+		</require_module>
+		<require_module version="0.5.1">
+			org.openmrs.module.shr-odd
+		</require_module>
 																		
 	</require_modules>
 

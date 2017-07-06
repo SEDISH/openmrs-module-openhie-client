@@ -214,7 +214,6 @@ public class AuditUtil {
 							AuditMessages.createParticipantObjectDetail("MSH-10", query.getMSH().getMessageControlID().getValue().getBytes())	
 					)
 				);
-				
 			}
 		
 		return retVal;

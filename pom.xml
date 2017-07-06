@@ -66,6 +66,50 @@
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
+
+			<!-- Everest Dependencies -->
+			<dependency>
+				<groupId>org.marc.everest</groupId>
+				<artifactId>everest-core</artifactId>
+				<version>1.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.marc.everest</groupId>
+				<artifactId>everest-formatters-xml-its1</artifactId>
+				<version>1.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.marc.everest</groupId>
+				<artifactId>everest-formatters-xml-dt-r1</artifactId>
+				<version>1.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.marc.everest</groupId>
+				<artifactId>everest-rmim-uv-cdar2</artifactId>
+				<version>1.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.dcm4che</groupId>
+				<artifactId>dcm4che-net-audit</artifactId>
+				<version>3.3.6</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.dcm4che</groupId>
+				<artifactId>dcm4che-audit</artifactId>
+				<version>3.3.6</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.dcm4che</groupId>
+				<artifactId>dcm4che-net</artifactId>
+				<version>3.3.6</version>
+				<scope>provided</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -79,6 +123,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.6.1</version>
 					<configuration>
 						<target>1.6</target>
 						<source>1.6</source>
@@ -98,6 +143,10 @@
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
 			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+		</repository>
+		<repository>
+			<id>marc-te-main</id>
+			<url>http://te.marc-hi.ca/mvn</url>
 		</repository>
 	</repositories>
 
