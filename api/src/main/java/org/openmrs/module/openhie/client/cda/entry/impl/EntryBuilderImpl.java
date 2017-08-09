@@ -65,12 +65,9 @@ import org.marc.everest.rmim.uv.cdar2.vocabulary.x_ActRelationshipExternalRefere
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentActMood;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentProcedureMood;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentSubstanceMood;
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.Concept;
-import org.openmrs.Drug;
-import org.openmrs.Obs;
-import org.openmrs.Provider;
-import org.openmrs.activelist.ActiveListItem;
+import org.openmrs.*;
+//import org.openmrs.activelist.ActiveListItem;				//does not exist any more
+import org.openmrs.Allergy;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.openhie.client.cda.entry.EntryBuilder;
 import org.openmrs.module.openhie.client.util.CdaDataUtil;
@@ -404,7 +401,6 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 		retVal.setEffectiveTime(this.m_cdaDataUtil.createTS(effectiveTime));
 		
 		return retVal;
-		
     }
 
 	/**
@@ -442,11 +438,12 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 	/**
 	 * Create an Act
 	 */
-	protected Act createAct(x_ActClassDocumentEntryAct classCode, x_DocumentActMood moodCode, List<String> templateId, ActiveListItem activeListItem) {
+	protected Act createAct(x_ActClassDocumentEntryAct classCode, x_DocumentActMood moodCode, List<String> templateId, BaseOpenmrsData activeListItem) {
+
 		Act retVal = new Act();
 		retVal.setClassCode(classCode);
 		retVal.setMoodCode(moodCode);
-		
+
 		retVal.setTemplateId(this.getTemplateIdList(templateId));
 		
 	    // Add identifier

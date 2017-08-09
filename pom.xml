@@ -114,7 +114,7 @@
 	</dependencyManagement>
 
 	<properties>
-		<openMRSVersion>1.11.3</openMRSVersion>
+		<openMRSVersion>2.0.5</openMRSVersion>
 	</properties>
 
 	<build>
@@ -147,6 +147,11 @@
 		<repository>
 			<id>marc-te-main</id>
 			<url>http://te.marc-hi.ca/mvn</url>
+		</repository>
+		<repository>
+			<id>dcm4che-repo</id>
+			<name>DCM4CHE Repository</name>
+			<url>http://www.dcm4che.org/maven2</url>
 		</repository>
 	</repositories>
 

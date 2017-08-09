@@ -142,6 +142,7 @@ public final class CdaMetadataUtil {
 	        	else
 	        		log.warn(String.format("Could not find code for %s in %s", value, targetCodeSystem));
 	        }
+
 	        // Now that we have a term, let's see if we can select a preferred term
 	        ConceptReferenceTerm preferredTerm = preferredCodes.poll();
 	        if(preferredTerm == null) // No preferred terms!

@@ -1,11 +1,11 @@
-*.class
-.settings
-.project
-.classpath
-target
+*.iml
+*.xml
+*.jsp
+*.properties
+*.xls
+*.css
+*.lst
+*.xsl
+.name
+!pom.xml
 
-# Package Files #
-*.jar
-*.war
-*.ear
-/target/*

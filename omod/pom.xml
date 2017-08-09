@@ -49,13 +49,13 @@
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>shr-cdahandler-api</artifactId>
-			<version>0.6.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>shr-atna-api</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -95,7 +95,17 @@
 			<version>2.0.4</version>
 			<scope>provided</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>shr-cdahandler-api</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>shr-cdahandler-api</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
