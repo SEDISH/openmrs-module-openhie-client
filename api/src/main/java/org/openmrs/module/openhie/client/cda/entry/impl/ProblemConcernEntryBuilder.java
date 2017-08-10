@@ -1,18 +1,12 @@
 package org.openmrs.module.openhie.client.cda.entry.impl;
 
-import java.util.Arrays;
-import java.util.Calendar;
+import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.marc.everest.datatypes.BL;
-import org.marc.everest.datatypes.II;
-import org.marc.everest.datatypes.NullFlavor;
-import org.marc.everest.datatypes.SD;
 import org.marc.everest.datatypes.TS;
 import org.marc.everest.datatypes.generic.CD;
 import org.marc.everest.datatypes.generic.IVL;
-import org.marc.everest.datatypes.generic.LIST;
-import org.marc.everest.datatypes.generic.SET;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.Act;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.ClinicalStatement;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.EntryRelationship;
@@ -22,14 +16,9 @@ import org.marc.everest.rmim.uv.cdar2.vocabulary.x_ActClassDocumentEntryAct;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_ActMoodDocumentObservation;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_ActRelationshipEntryRelationship;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentActMood;
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.Obs;
-import org.openmrs.activelist.ActiveListItem;
-import org.openmrs.activelist.Problem;
-import org.openmrs.activelist.ProblemModifier;
+import org.openmrs.*;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.shr.cdahandler.CdaHandlerConstants;
-import org.openmrs.web.dwr.ListItem;
-import org.openmrs.web.dwr.ProblemListItem;
 
 public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
 
@@ -39,7 +28,7 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
 	 * @param data
 	 * @return
 	 */
-	public Act generate(Problem data)
+	public Act generate(Condition data)
 	{
 		Act retVal = super.createAct(
 				x_ActClassDocumentEntryAct.Act,
@@ -48,16 +37,16 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
 				data);
 		
 		// Modofiers
-		if(data.getModifier() != null)
-			switch(data.getModifier())
+		if(data.getStatus() != null)
+			switch(data.getStatus())
 			{
 				case HISTORY_OF:
-					if(data.getVoided())
-						retVal.setStatusCode(ActStatus.Completed);
-					else
-						retVal.setStatusCode(ActStatus.Active);
+					retVal.setStatusCode(ActStatus.Completed);
 					break;
-				case RULE_OUT:
+				case ACTIVE:
+					retVal.setStatusCode(ActStatus.Active);
+					break;
+				case INACTIVE:
 					retVal.setNegationInd(BL.TRUE);
 			}
 		else
@@ -66,17 +55,20 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
 		Calendar startTime = Calendar.getInstance(),
 				stopTime = Calendar.getInstance();
 		startTime.setTime(data.getDateCreated());
-		if(data.getStopObs() != null)
-			stopTime.setTime(data.getStopObs().getDateCreated());
-		retVal.setEffectiveTime(new IVL<TS>(new TS(startTime, TS.DAY), data.getStopObs() != null ? new TS(stopTime) : null));
+		if(data.getVoided() != null)
+			stopTime.setTime(data.getDateVoided());
+		retVal.setEffectiveTime(new IVL<TS>(new TS(startTime, TS.DAY), data.getDateVoided() != null ? new TS(stopTime) : null));
 		
 		// Entry relationship
 		Observation concernObs = null;
 		
 		// Add an entry relationship of the problem
-		Obs problemObs = data.getStartObs();
-		if(data.getStopObs() != null)
-			problemObs = data.getStopObs();
+		Obs problemObs = findFirstProblemObs(data.getPatient(), data.getConcept());
+		Obs stopObs = findLastProblemObs(data.getPatient(), data.getConcept());
+
+
+		if(stopObs != null)
+			problemObs = stopObs;
 		
 		if(problemObs != null)
 			concernObs = super.createObservation(Arrays.asList(CdaHandlerConstants.ENT_TEMPLATE_CCD_PROBLEM_OBSERVATION, CdaHandlerConstants.ENT_TEMPLATE_PROBLEM_OBSERVATION),
@@ -89,7 +81,7 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
 			concernObs.setCode(new CD<String>("64572001", CdaHandlerConstants.CODE_SYSTEM_SNOMED, "SNOMED", null, "Condition", null));
 			concernObs.setStatusCode(ActStatus.Completed);
 			concernObs.setEffectiveTime(retVal.getEffectiveTime());
-			concernObs.setValue(this.m_cdaMetadataUtil.getStandardizedCode(data.getProblem(), CdaHandlerConstants.CODE_SYSTEM_ICD_10, CD.class));
+			concernObs.setValue(this.m_cdaMetadataUtil.getStandardizedCode(data.getConcept(), CdaHandlerConstants.CODE_SYSTEM_ICD_10, CD.class));
 		}
 
 		retVal.getEntryRelationship().add(new EntryRelationship(x_ActRelationshipEntryRelationship.SUBJ, BL.TRUE, concernObs));
@@ -101,11 +93,32 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
 	 */
 	@Override
 	public ClinicalStatement generate(BaseOpenmrsData data) {
-		if(data instanceof Problem)
-			return this.generate((Problem)data);
+		if(data instanceof Condition)
+			return this.generate((Condition)data);
 		// TODO DrugOrder types
 		throw new NotImplementedException();
-
 	}
+
+	protected Obs findLastProblemObs(Person patient, Concept concept) {
+		List<Obs> candidates= Context.getObsService().getObservations(Arrays.asList(patient), null, null,
+				Arrays.asList(concept),null, null, null, null, null, null , null, false);
+		Collections.sort(candidates, Comparator.comparing(Obs::getObsDatetime));
+		if (candidates.size() > 0) {
+			return candidates.get(candidates.size() - 1);
+		}
+		return null;
+	}
+
+	protected Obs findFirstProblemObs(Patient patient, Concept concept) {
+		List<Obs> candidates= Context.getObsService().getObservations(Arrays.asList(patient), null, null,
+				Arrays.asList(concept),null, null, null, null, null, null , null, false);
+		Collections.sort(candidates, Comparator.comparing(Obs::getObsDatetime));
+		if (candidates.size() > 0) {
+			return candidates.get(0);
+		}
+		return null;
+	}
+
+
 
 }
