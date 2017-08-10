@@ -43,7 +43,7 @@ public class AllergyConcernEntryBuilder extends EntryBuilderImpl {
                 x_ActClassDocumentEntryAct.Act,
                 x_DocumentActMood.Eventoccurrence,
                 Arrays.asList(CdaHandlerConstants.ENT_TEMPLATE_ALLERGIES_AND_INTOLERANCES_CONCERN, CdaHandlerConstants.ENT_TEMPLATE_CONCERN_ENTRY,
-                        CdaHandlerConstants.ENT_TEMPLATE_CCD_PROBLEM_ACT), data);
+                        CdaHandlerConstants.ENT_TEMPLATE_CCD_PROBLEM_ACT), data, findFirstProblemObs(data.getPatient(), data.getAllergen().getCodedAllergen()), findLastProblemObs(data.getPatient(), data.getAllergen().getCodedAllergen()));
 
         // Add an entry relationship of the problem
         // Obs problemObs = data.getStartObs();
@@ -149,7 +149,7 @@ public class AllergyConcernEntryBuilder extends EntryBuilderImpl {
                 listOfReactions.add(this.m_cdaMetadataUtil.getStandardizedCode(reaction.getReaction(), null, CD.class));
             }
             manifestationObservation.setValue(listOfReactions);
-            //TODO iterate manifestationObservation value to find instances of CE?
+
             for (ANY manifestationObservationValue : (LIST<ANY>)manifestationObservation.getValue()) {
                 if (manifestationObservationValue instanceof CE)
                     super.correctCode((CE) manifestationObservation.getValue(), CdaHandlerConstants.CODE_SYSTEM_ICD_10, CdaHandlerConstants.CODE_SYSTEM_SNOMED);

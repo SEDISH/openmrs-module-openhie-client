@@ -28,11 +28,14 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
      * @return
      */
     public Act generate(Condition data) {
+        Obs problemObs = findFirstProblemObs(data.getPatient(), data.getConcept());
+        Obs stopObs = findLastProblemObs(data.getPatient(), data.getConcept());
+
         Act retVal = super.createAct(
                 x_ActClassDocumentEntryAct.Act,
                 x_DocumentActMood.Eventoccurrence,
                 Arrays.asList(CdaHandlerConstants.ENT_TEMPLATE_PROBLEM_CONCERN, CdaHandlerConstants.ENT_TEMPLATE_CONCERN_ENTRY, CdaHandlerConstants.ENT_TEMPLATE_CCD_PROBLEM_ACT),
-                data);
+                data, problemObs , stopObs );
 
         // Modofiers
         if (data.getStatus() != null)
@@ -60,8 +63,6 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
         Observation concernObs = null;
 
         // Add an entry relationship of the problem
-        Obs problemObs = findFirstProblemObs(data.getPatient(), data.getConcept());
-        Obs stopObs = findLastProblemObs(data.getPatient(), data.getConcept());
 
         if (stopObs != null)
             problemObs = stopObs;
