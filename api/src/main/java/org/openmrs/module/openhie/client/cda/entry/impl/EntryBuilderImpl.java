@@ -2,12 +2,7 @@ package org.openmrs.module.openhie.client.cda.entry.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,8 +61,6 @@ import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentActMood;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentProcedureMood;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_DocumentSubstanceMood;
 import org.openmrs.*;
-//import org.openmrs.activelist.ActiveListItem;				//does not exist any more
-import org.openmrs.Allergy;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.openhie.client.cda.entry.EntryBuilder;
 import org.openmrs.module.openhie.client.util.CdaDataUtil;
@@ -438,7 +431,7 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 	/**
 	 * Create an Act
 	 */
-	protected Act createAct(x_ActClassDocumentEntryAct classCode, x_DocumentActMood moodCode, List<String> templateId, BaseOpenmrsData activeListItem) {
+	protected Act createAct(x_ActClassDocumentEntryAct classCode, x_DocumentActMood moodCode, List<String> templateId, BaseOpenmrsData baseOpenmrsData) {
 
 		Act retVal = new Act();
 		retVal.setClassCode(classCode);
@@ -448,41 +441,41 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 		
 	    // Add identifier
 	    retVal.setId(new SET<II>());
-	    if(activeListItem.getStartObs() != null && activeListItem.getStartObs().getAccessionNumber() != null &&
-	    		activeListItem.getStartObs().getAccessionNumber().isEmpty())
-	    	retVal.getId().add(this.m_cdaDataUtil.parseIIFromString(activeListItem.getStartObs().getAccessionNumber()));
+	    if(baseOpenmrsData.getStartObs() != null && baseOpenmrsData.getStartObs().getAccessionNumber() != null &&
+	    		baseOpenmrsData.getStartObs().getAccessionNumber().isEmpty())
+	    	retVal.getId().add(this.m_cdaDataUtil.parseIIFromString(baseOpenmrsData.getStartObs().getAccessionNumber()));
 	    
-	    retVal.getId().add(new II(this.m_cdaConfiguration.getProblemRoot(), activeListItem.getId().toString()));
+	    retVal.getId().add(new II(this.m_cdaConfiguration.getProblemRoot(), baseOpenmrsData.getId().toString()));
 	    // Add the code
 	    retVal.setCode(new CD<String>());
 	    retVal.getCode().setNullFlavor(NullFlavor.NotApplicable);
 	    
 	    // Now add reference the status code
 	    IVL<TS> eft = new IVL<TS>();
-	    if(activeListItem.getStartObs() != null)
+	    if(baseOpenmrsData.getStartObs() != null)
 	    {
-    		eft.setLow(this.m_cdaDataUtil.createTS(activeListItem.getStartDate()));
-	    	if(activeListItem.getStartObs() != null)
+    		eft.setLow(this.m_cdaDataUtil.createTS(baseOpenmrsData.getStartDate()));
+	    	if(baseOpenmrsData.getStartObs() != null)
 	    	{
 	    		// Correct the precision of the dates
-	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(activeListItem.getStartObs().getId());
+	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(baseOpenmrsData.getStartObs().getId());
 	    		if(obs != null && obs.getObsDatePrecision() == 0)
 	    			eft.getLow().setNullFlavor(NullFlavor.Unknown);
 	    		else if(obs != null)
 	    			eft.getLow().setDateValuePrecision(obs.getObsDatePrecision());
 	    	}
 	    }
-	    else if(activeListItem.getStartDate() != null)
+	    else if(baseOpenmrsData.getStartDate() != null)
 	    {
-	    	eft.setLow(this.m_cdaDataUtil.createTS(activeListItem.getStartDate()));
+	    	eft.setLow(this.m_cdaDataUtil.createTS(baseOpenmrsData.getStartDate()));
 	    }
-	    if(activeListItem.getStopObs() != null)
+	    if(baseOpenmrsData.getStopObs() != null)
 	    {
-	    	eft.setHigh(this.m_cdaDataUtil.createTS(activeListItem.getEndDate()));
-	    	if(activeListItem.getStopObs() != null)
+	    	eft.setHigh(this.m_cdaDataUtil.createTS(baseOpenmrsData.getEndDate()));
+	    	if(baseOpenmrsData.getStopObs() != null)
 	    	{
 	    		// Correct the precision of the dates
-	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(activeListItem.getStopObs().getId());
+	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(baseOpenmrsData.getStopObs().getId());
 	    		if(obs != null && obs.getObsDatePrecision() == 0)
 	    			eft.getHigh().setNullFlavor(NullFlavor.Unknown);
 	    		else if(obs != null)
@@ -494,9 +487,9 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 	    retVal.setEffectiveTime(eft);
 	    
 	    // Is there a creation time?
-    	retVal.getAuthor().add(this.createAuthorPointer(activeListItem));
+    	retVal.getAuthor().add(this.createAuthorPointer(baseOpenmrsData));
 	    
-	    retVal.setStatusCode(ConcernEntryProcessor.calculateCurrentStatus(activeListItem));;
+	    retVal.setStatusCode(ConcernEntryProcessor.calculateCurrentStatus(baseOpenmrsData));;
 	    
 		return retVal;
     }
@@ -868,5 +861,24 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 		return retVal;
     }
 
+	protected Obs findLastProblemObs(Person patient, Concept concept) {
+		List<Obs> candidates = Context.getObsService().getObservations(Arrays.asList(patient), null, null,
+				Arrays.asList(concept), null, null, null, null, null, null, null, false);
+		Collections.sort(candidates, Comparator.comparing(Obs::getObsDatetime));
+		if (candidates.size() > 0) {
+			return candidates.get(candidates.size() - 1);
+		}
+		return null;
+	}
+
+	protected Obs findFirstProblemObs(Patient patient, Concept concept) {
+		List<Obs> candidates = Context.getObsService().getObservations(Arrays.asList(patient), null, null,
+				Arrays.asList(concept), null, null, null, null, null, null, null, false);
+		Collections.sort(candidates, Comparator.comparing(Obs::getObsDatetime));
+		if (candidates.size() > 0) {
+			return candidates.get(0);
+		}
+		return null;
+	}
 
 }
