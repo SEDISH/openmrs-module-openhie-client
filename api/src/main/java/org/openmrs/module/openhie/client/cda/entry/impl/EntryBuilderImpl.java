@@ -431,19 +431,19 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 	/**
 	 * Create an Act
 	 */
-	protected Act createAct(x_ActClassDocumentEntryAct classCode, x_DocumentActMood moodCode, List<String> templateId, BaseOpenmrsData baseOpenmrsData) {
+	protected Act createAct(x_ActClassDocumentEntryAct classCode, x_DocumentActMood moodCode, List<String> templateId, BaseOpenmrsData baseOpenmrsData, Obs startObs, Obs stopObs) {
 
 		Act retVal = new Act();
 		retVal.setClassCode(classCode);
 		retVal.setMoodCode(moodCode);
 
 		retVal.setTemplateId(this.getTemplateIdList(templateId));
-		
+
 	    // Add identifier
 	    retVal.setId(new SET<II>());
-	    if(baseOpenmrsData.getStartObs() != null && baseOpenmrsData.getStartObs().getAccessionNumber() != null &&
-	    		baseOpenmrsData.getStartObs().getAccessionNumber().isEmpty())
-	    	retVal.getId().add(this.m_cdaDataUtil.parseIIFromString(baseOpenmrsData.getStartObs().getAccessionNumber()));
+	    if(startObs != null && startObs.getAccessionNumber() != null &&
+				startObs.getAccessionNumber().isEmpty())
+	    	retVal.getId().add(this.m_cdaDataUtil.parseIIFromString(startObs.getAccessionNumber()));
 	    
 	    retVal.getId().add(new II(this.m_cdaConfiguration.getProblemRoot(), baseOpenmrsData.getId().toString()));
 	    // Add the code
@@ -452,30 +452,30 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 	    
 	    // Now add reference the status code
 	    IVL<TS> eft = new IVL<TS>();
-	    if(baseOpenmrsData.getStartObs() != null)
+	    if(startObs != null)
 	    {
-    		eft.setLow(this.m_cdaDataUtil.createTS(baseOpenmrsData.getStartDate()));
-	    	if(baseOpenmrsData.getStartObs() != null)
+    		eft.setLow(this.m_cdaDataUtil.createTS(baseOpenmrsData.getDateCreated()));
+	    	if(startObs != null)
 	    	{
 	    		// Correct the precision of the dates
-	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(baseOpenmrsData.getStartObs().getId());
+	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(startObs.getId());
 	    		if(obs != null && obs.getObsDatePrecision() == 0)
 	    			eft.getLow().setNullFlavor(NullFlavor.Unknown);
 	    		else if(obs != null)
 	    			eft.getLow().setDateValuePrecision(obs.getObsDatePrecision());
 	    	}
 	    }
-	    else if(baseOpenmrsData.getStartDate() != null)
+	    else if(baseOpenmrsData.getDateCreated() != null)
 	    {
-	    	eft.setLow(this.m_cdaDataUtil.createTS(baseOpenmrsData.getStartDate()));
+	    	eft.setLow(this.m_cdaDataUtil.createTS(baseOpenmrsData.getDateCreated()));
 	    }
-	    if(baseOpenmrsData.getStopObs() != null)
+	    if(stopObs != null)
 	    {
-	    	eft.setHigh(this.m_cdaDataUtil.createTS(baseOpenmrsData.getEndDate()));
-	    	if(baseOpenmrsData.getStopObs() != null)
+	    	eft.setHigh(this.m_cdaDataUtil.createTS(baseOpenmrsData.getDateVoided()));
+	    	if(stopObs != null)
 	    	{
 	    		// Correct the precision of the dates
-	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(baseOpenmrsData.getStopObs().getId());
+	    		ExtendedObs obs = Context.getService(CdaImportService.class).getExtendedObs(stopObs.getId());
 	    		if(obs != null && obs.getObsDatePrecision() == 0)
 	    			eft.getHigh().setNullFlavor(NullFlavor.Unknown);
 	    		else if(obs != null)
@@ -489,7 +489,7 @@ public abstract class EntryBuilderImpl implements EntryBuilder {
 	    // Is there a creation time?
     	retVal.getAuthor().add(this.createAuthorPointer(baseOpenmrsData));
 	    
-	    retVal.setStatusCode(ConcernEntryProcessor.calculateCurrentStatus(baseOpenmrsData));;
+	    retVal.setStatusCode(ConcernEntryProcessor.calculateCurrentStatus((Condition) baseOpenmrsData));
 	    
 		return retVal;
     }
