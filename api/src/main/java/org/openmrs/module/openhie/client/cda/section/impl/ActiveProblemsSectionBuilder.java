@@ -9,11 +9,9 @@ import org.marc.everest.datatypes.generic.LIST;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.Entry;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.Section;
 import org.marc.everest.rmim.uv.cdar2.vocabulary.x_ActRelationshipEntry;
-import org.openmrs.activelist.Problem;
 import org.openmrs.module.openhie.client.cda.entry.impl.ProblemConcernEntryBuilder;
 import org.openmrs.module.shr.cdahandler.CdaHandlerConstants;
-import org.openmrs.module.shr.cdahandler.processor.entry.impl.ihe.pcc.ProblemConcernEntryProcessor;
-import org.openmrs.web.dwr.ProblemListItem;
+import org.openmrs.Condition;
 
 /**
  * Active problems section bulder
@@ -42,12 +40,12 @@ public class ActiveProblemsSectionBuilder extends SectionBuilderImpl {
 	 * @param problem
 	 * @return
 	 */
-	public Section generate(Problem... problem)
+	public Section generate(Condition... problem)
 	{
 		ArrayList<Entry> entries = new ArrayList<Entry>();
 		
 		ProblemConcernEntryBuilder builder = new ProblemConcernEntryBuilder();
-		for(Problem prob : problem)
+		for(Condition prob : problem)
 		{
 			Entry ent = new Entry(x_ActRelationshipEntry.HasComponent, BL.TRUE, builder.generate(prob));
 			entries.add(ent);
