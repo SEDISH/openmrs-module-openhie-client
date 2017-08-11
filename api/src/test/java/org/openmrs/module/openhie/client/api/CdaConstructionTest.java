@@ -22,13 +22,11 @@ import org.marc.everest.interfaces.IResultDetail;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.ClinicalDocument;
 import org.marc.everest.rmim.uv.cdar2.pocd_mt000040uv.Section;
 import org.marc.everest.rmim.uv.cdar2.rim.InfrastructureRoot;
-import org.openmrs.GlobalProperty;
-import org.openmrs.Obs;
-import org.openmrs.Visit;
-import org.openmrs.activelist.ActiveListType;
-import org.openmrs.activelist.Allergy;
-import org.openmrs.activelist.Problem;
+import org.openmrs.*;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.module.emrapi.conditionslist.ConditionService;
 import org.openmrs.module.openhie.client.api.util.CdaLoggingUtils;
 import org.openmrs.module.openhie.client.cda.document.impl.ApsDocumentBuilder;
 import org.openmrs.module.openhie.client.cda.document.impl.DocumentBuilderImpl;
@@ -49,6 +47,7 @@ import org.openmrs.module.shr.cdahandler.processor.util.OpenmrsConceptUtil;
 import org.openmrs.module.shr.cdahandler.processor.util.OpenmrsDataUtil;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.Obs;
 
 public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 
@@ -142,16 +141,15 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 				medicationObs.add(obs);
 			else if(loincCode == null || loincCode.getCode() == null)
 				continue;
-			
 		}
 
 		MedicationsSectionBuilder medSectionBuilder = new MedicationsSectionBuilder();
 		ActiveProblemsSectionBuilder probBuilder = new ActiveProblemsSectionBuilder();
 		AllergiesIntolerancesSectionBuilder allergyBuilder = new AllergiesIntolerancesSectionBuilder();
-		
+
 		Section medicationsSection = medSectionBuilder.generate(medicationObs.toArray(new Obs[]{})),
-				probSection = probBuilder.generate(Context.getActiveListService().getActiveListItems(v1.getPatient(), Problem.ACTIVE_LIST_TYPE).toArray(new Problem[] {})),
-				allergySection = allergyBuilder.generate(Context.getActiveListService().getActiveListItems(v1.getPatient(), Allergy.ACTIVE_LIST_TYPE).toArray(new Allergy[] {}));
+				probSection = probBuilder.generate(Context.getService(ConditionService.class).getActiveConditions(v1.getPatient()).toArray(new Condition[]{})),
+				allergySection = allergyBuilder.generate(Context.getService(PatientService.class).getAllergies(v1.getPatient()).toArray(new Allergy[]{}));
 
 		DocumentBuilderImpl apsBuilder = new DocumentBuilderImpl();
 		apsBuilder.setRecordTarget(v1.getPatient());
@@ -228,8 +226,8 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 				flowsheetSection = flowsheetSectionBuilder.generate(prepregnancyWeightObs, gestgationalAgeObs, fundalHeightObs, presentationObs, systolicBpObs, diastolicBpObs, weightObs),
 				vitalSignsSection = vitalSignsSectionBuilder.generate(systolicBpObs, diastolicBpObs, weightObs, heightObs, temperatureObs),
 				medicationsSection = medSectionBuilder.generate(medicationObs.toArray(new Obs[]{})),
-				probSection = probBuilder.generate(Context.getActiveListService().getActiveListItems(v1.getPatient(), Problem.ACTIVE_LIST_TYPE).toArray(new Problem[] {})),
-				allergySection = allergyBuilder.generate(Context.getActiveListService().getActiveListItems(v1.getPatient(), Allergy.ACTIVE_LIST_TYPE).toArray(new Allergy[] {}));
+				probSection = probBuilder.generate(Context.getService(ConditionService.class).getActiveConditions(v1.getPatient()).toArray(new Condition[]{})),
+				allergySection = allergyBuilder.generate(Context.getService(PatientService.class).getAllergies(v1.getPatient()).toArray(new Allergy[]{}));
 
 		ApsDocumentBuilder apsBuilder = new ApsDocumentBuilder();
 		apsBuilder.setRecordTarget(v1.getPatient());
