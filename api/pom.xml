@@ -29,7 +29,9 @@
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
+			<version>${openMRSVersion}</version>
 			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.web</groupId>
@@ -121,19 +123,19 @@
 			<version>RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<scope>compile</scope>
+			<groupId>org.databene</groupId>
+			<artifactId>databene-commons</artifactId>
+			<version>RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<scope>compile</scope>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>emrapi-condition-list</artifactId>
+			<version>RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-			<scope>compile</scope>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>legacyui-omod</artifactId>
+			<version>1.3.3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	
