@@ -18,7 +18,7 @@ import org.openmrs.Condition;
  * @author JustinFyfe
  *
  */
-public class ActiveProblemsSectionBuilder extends SectionBuilderImpl {
+public class ActiveConditionsSectionBuilder extends SectionBuilderImpl {
 
 	/**
 	 * Generate the active problems section
@@ -36,18 +36,18 @@ public class ActiveProblemsSectionBuilder extends SectionBuilderImpl {
 	}
 
 	/**
-	 * Generate the section with the specified problem list
-	 * @param problem
+	 * Generate the section with the specified conditions list
+	 * @param conditions
 	 * @return
 	 */
-	public Section generate(Condition... problem)
+	public Section generate(Condition... conditions)
 	{
 		ArrayList<Entry> entries = new ArrayList<Entry>();
 		
 		ProblemConcernEntryBuilder builder = new ProblemConcernEntryBuilder();
-		for(Condition prob : problem)
+		for(Condition condition : conditions)
 		{
-			Entry ent = new Entry(x_ActRelationshipEntry.HasComponent, BL.TRUE, builder.generate(prob));
+			Entry ent = new Entry(x_ActRelationshipEntry.HasComponent, BL.TRUE, builder.generate(condition));
 			entries.add(ent);
 		}
 		
