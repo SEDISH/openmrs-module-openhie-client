@@ -13,3 +13,5 @@
 !/api/src/test/resources/CielList.xml
 !/api/src/test/resources/OnDemandTest.xml
 !/api/src/test/resources/aps_first_visit.xml
+!/api/src/test/resources/test-hibernate.cfg.xml
+!/api/src/test/resources/test-hibernate.cfg.xml
