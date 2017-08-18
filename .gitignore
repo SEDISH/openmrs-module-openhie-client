@@ -9,3 +9,7 @@
 .name
 !pom.xml
 
+!/api/src/test/resources/cdaFromOscarEmr.xml
+!/api/src/test/resources/CielList.xml
+!/api/src/test/resources/OnDemandTest.xml
+!/api/src/test/resources/aps_first_visit.xml
