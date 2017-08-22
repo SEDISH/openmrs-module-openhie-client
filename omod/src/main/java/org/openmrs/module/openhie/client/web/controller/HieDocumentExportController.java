@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.conditionslist.ConditionService;
 import org.openmrs.module.openhie.client.api.HealthInformationExchangeService;
 import org.openmrs.module.openhie.client.cda.document.DocumentBuilder;
-import org.openmrs.module.openhie.client.cda.section.impl.ActiveProblemsSectionBuilder;
+import org.openmrs.module.openhie.client.cda.section.impl.ActiveConditionsSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.AllergiesIntolerancesSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.AntepartumFlowsheetPanelSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.EstimatedDeliveryDateSectionBuilder;
@@ -131,7 +131,7 @@ public class HieDocumentExportController {
         AntepartumFlowsheetPanelSectionBuilder flowsheetSectionBuilder = new AntepartumFlowsheetPanelSectionBuilder();
         VitalSignsSectionBuilder vitalSignsSectionBuilder = new VitalSignsSectionBuilder();
         MedicationsSectionBuilder medSectionBuilder = new MedicationsSectionBuilder();
-        ActiveProblemsSectionBuilder probBuilder = new ActiveProblemsSectionBuilder();
+        ActiveConditionsSectionBuilder probBuilder = new ActiveConditionsSectionBuilder();
         AllergiesIntolerancesSectionBuilder allergyBuilder = new AllergiesIntolerancesSectionBuilder();
 
         Section eddSection = null, flowsheetSection = null, vitalSignsSection = null,

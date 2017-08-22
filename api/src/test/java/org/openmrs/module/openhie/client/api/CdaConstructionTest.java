@@ -2,18 +2,17 @@ package org.openmrs.module.openhie.client.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.marc.everest.rmim.uv.cdar2.vocabulary.ResponseLevel.Exception;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.databene.commons.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.marc.everest.datatypes.generic.CD;
@@ -25,26 +24,22 @@ import org.marc.everest.rmim.uv.cdar2.rim.InfrastructureRoot;
 import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.emrapi.conditionslist.ConditionService;
 import org.openmrs.module.openhie.client.api.util.CdaLoggingUtils;
 import org.openmrs.module.openhie.client.cda.document.impl.ApsDocumentBuilder;
 import org.openmrs.module.openhie.client.cda.document.impl.DocumentBuilderImpl;
-import org.openmrs.module.openhie.client.cda.section.impl.ActiveProblemsSectionBuilder;
+import org.openmrs.module.openhie.client.cda.section.impl.ActiveConditionsSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.AllergiesIntolerancesSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.AntepartumFlowsheetPanelSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.EstimatedDeliveryDateSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.MedicationsSectionBuilder;
 import org.openmrs.module.openhie.client.cda.section.impl.VitalSignsSectionBuilder;
-import org.openmrs.module.openhie.client.util.CdaDataUtil;
 import org.openmrs.module.openhie.client.util.CdaMetadataUtil;
 import org.openmrs.module.shr.cdahandler.CdaHandlerConstants;
 import org.openmrs.module.shr.cdahandler.api.CdaImportService;
 import org.openmrs.module.shr.cdahandler.configuration.CdaHandlerConfiguration;
-import org.openmrs.module.shr.cdahandler.exception.DocumentImportException;
+import org.openmrs.module.shr.cdahandler.exception.DocumentImportException;gi
 import org.openmrs.module.shr.cdahandler.exception.DocumentValidationException;
-import org.openmrs.module.shr.cdahandler.processor.util.OpenmrsConceptUtil;
-import org.openmrs.module.shr.cdahandler.processor.util.OpenmrsDataUtil;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.Obs;
@@ -78,12 +73,9 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
         Context.getAdministrationService().setGlobalProperty("shr-cdahandler.cacheMappedConcepts", "false");
         Context.getAdministrationService().setGlobalProperty(CdaHandlerConfiguration.PROP_VALIDATE_STRUCTURE, "false");
 		Context.getAdministrationService().saveGlobalProperty(saveDir);
-		//GlobalProperty disableValidation = new GlobalProperty(OpenmrsConstants.GP_DISABLE_VALIDATION, "true");
-		//Context.getAdministrationService().saveGlobalProperty(disableValidation);
 		Context.checkCoreDataset();
 		executeDataSet(ACTIVE_LIST_INITIAL_XML);
 		executeDataSet(CIEL_LIST_INITIAL_XML);
-
 	}
 	
 	/**
@@ -91,7 +83,6 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 	 */
 	private Visit doParseCda(String resourceName)
 	{
-		
 		URL validAphpSample = this.getClass().getResource(resourceName);
 		File fileUnderTest = new File(validAphpSample.getFile());
 		FileInputStream fs = null;
@@ -119,12 +110,12 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 	        log.error("Error generated", e);
 	        return null;
         }
-
 	}
 	
 	/**
 	 * Test generation of simple generic document from OSCAR
 	 */
+
 	@Test
 	public void testGenerateSimpleGenericDocumentOscar()
 	{
@@ -144,7 +135,7 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 		}
 
 		MedicationsSectionBuilder medSectionBuilder = new MedicationsSectionBuilder();
-		ActiveProblemsSectionBuilder probBuilder = new ActiveProblemsSectionBuilder();
+		ActiveConditionsSectionBuilder probBuilder = new ActiveConditionsSectionBuilder();
 		AllergiesIntolerancesSectionBuilder allergyBuilder = new AllergiesIntolerancesSectionBuilder();
 
 		Section medicationsSection = medSectionBuilder.generate(medicationObs.toArray(new Obs[]{})),
@@ -160,8 +151,6 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 		log.error(CdaLoggingUtils.getCdaAsString(doc));
 		
 		assertEquals(2, doc.getTemplateId().size());
-		
-		
 	}
 	
 	/**
@@ -219,7 +208,7 @@ public class CdaConstructionTest extends BaseModuleContextSensitiveTest {
 		AntepartumFlowsheetPanelSectionBuilder flowsheetSectionBuilder = new AntepartumFlowsheetPanelSectionBuilder();
 		VitalSignsSectionBuilder vitalSignsSectionBuilder = new VitalSignsSectionBuilder();
 		MedicationsSectionBuilder medSectionBuilder = new MedicationsSectionBuilder();
-		ActiveProblemsSectionBuilder probBuilder = new ActiveProblemsSectionBuilder();
+		ActiveConditionsSectionBuilder probBuilder = new ActiveConditionsSectionBuilder();
 		AllergiesIntolerancesSectionBuilder allergyBuilder = new AllergiesIntolerancesSectionBuilder();
 		
 		Section eddSection = eddSectionBuilder.generate(estimatedDeliveryDateObs, lastMenstrualPeriodObs),
