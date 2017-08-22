@@ -64,11 +64,32 @@
   <concept concept_id="160617" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
   <concept concept_id="160432" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
 
-  <concept_name concept_name_id="340" concept_id="160432" name="Dead" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="340" concept_id="160432" name="Vital signs" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
   <concept_name concept_name_id="339" concept_id="1560" name="Family Member Relation" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
-  <concept_name concept_name_id="338" concept_id="160593" name="Family History List" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
-  <concept_name concept_name_id="332" concept_id="160741" name="Medication History" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="332" concept_id="160741" name="History of Medication Use" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
   <concept_name concept_name_id="333" concept_id="1282" name="Medication Orders" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
-  <concept_name concept_name_id="341" concept_id="1421" name="Immunization History" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="341" concept_id="1421" name="History of Immunizations" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+
+ <!-- Test data added in openMRS 2.0.5 release -->
+  <concept concept_id="981" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+  <concept concept_id="980" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+  <concept concept_id="979" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+  <concept concept_id="978" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+  <concept concept_id="977" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+  <concept concept_id="976" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+  <concept concept_id="975" datatype_id="4" class_id="5" is_set="0" retired="false"  date_created="2014-04-05"/>
+
+  <concept_name concept_name_id="988" concept_id="980" name="Prepregnancy Weight (kg)" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="989" concept_id="979" name="Summary Purpose" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="338" concept_id="160593" name="Family History" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="990" concept_id="978" name="Social History" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="991" concept_id="977" name="Active Problems" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="992" concept_id="976" name="Allergies, adverse reactions, alerts" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+  <concept_name concept_name_id="993" concept_id="975" name="completed" locale="en" date_created="2014-04-05" creator="1" voided="false" locale_preferred="0" concept_name_type="FULLY_SPECIFIED"/>
+
+  <person person_id="3" date_created="2015-12-12" voided="false" dead="false"/>
+  <patient patient_id="3" creator="1" date_created="2015-12-12" voided="false"/>
+  <conditions condition_id="98923" patient_id="3" status="completed" concept_id="977" creator="1" date_created="2014-04-05" voided="false"/>
+
 
 </dataset>
