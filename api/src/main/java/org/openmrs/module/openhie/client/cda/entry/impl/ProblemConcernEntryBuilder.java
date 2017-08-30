@@ -55,8 +55,8 @@ public class ProblemConcernEntryBuilder extends EntryBuilderImpl {
         Calendar startTime = Calendar.getInstance(),
                 stopTime = Calendar.getInstance();
         startTime.setTime(data.getDateCreated());
-        if (data.getVoided() != null)
-            stopTime.setTime(data.getDateVoided());
+        if (stopObs != null)
+            stopTime.setTime(stopObs.getValueDate());
         retVal.setEffectiveTime(new IVL<TS>(new TS(startTime, TS.DAY), data.getDateVoided() != null ? new TS(stopTime) : null));
 
         // Entry relationship
